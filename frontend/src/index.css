@@ -1,0 +1,44 @@
+@import "tailwindcss";
+
+@theme {
+  --color-twitter-blue: rgb(29, 155, 240);
+  --color-twitter-background: var(--bg-primary);
+  --color-twitter-background-secondary: var(--bg-secondary);
+  --color-twitter-border: var(--border-primary);
+  --color-twitter-text: var(--text-primary);
+  --color-twitter-gray: var(--text-secondary);
+  --color-twitter-hover: var(--bg-hover);
+  --color-twitter-widget: var(--bg-widget);
+}
+
+:root {
+  --bg-primary: #ffffff;
+  --bg-secondary: #f7f9f9;
+  --bg-hover: rgba(15, 20, 25, 0.1);
+  --bg-widget: #f7f9f9;
+  --border-primary: rgb(239, 243, 244);
+  --text-primary: #0f1419;
+  --text-secondary: rgb(83, 100, 113);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-primary: #000000;
+    --bg-secondary: #16181c;
+    --bg-hover: rgba(231, 233, 234, 0.1);
+    --bg-widget: #16181c;
+    --border-primary: rgb(47, 51, 54);
+    --text-primary: #e7e9ea;
+    --text-secondary: rgb(113, 118, 123);
+  }
+}
+
+body {
+  overflow-y: scroll;
+}
+
+@layer base {
+  body {
+    @apply bg-twitter-background text-twitter-text font-sans transition-colors duration-200;
+  }
+}
