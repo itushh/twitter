@@ -8,8 +8,10 @@ import {
     Bookmark,
     Users,
     User,
-    MoreHorizontal
+    MoreHorizontal,
+    LogOut
 } from "lucide-react";
+import { useAuth } from "../../context/AuthContext";
 
 interface SidebarItemProps {
     Icon: any;
@@ -34,6 +36,8 @@ const SidebarItem = ({ Icon, label, to }: SidebarItemProps) => (
 );
 
 const Sidebar = () => {
+    const { authUser, logout } = useAuth();
+
     return (
         <div className="hidden sm:flex flex-col h-screen sticky top-0 py-2 justify-between w-100">
             <div className="flex flex-col gap-1">
@@ -59,14 +63,35 @@ const Sidebar = () => {
                 </button>
             </div>
 
-            <NavLink to="/profile" className="mb-4 p-3 hover:bg-twitter-hover rounded-full cursor-pointer transition-colors flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-twitter-gray shrink-0" />
-                <div className="hidden xl:block flex-1">
-                    <p className="font-bold text-[15px]">Tushar</p>
-                    <p className="text-twitter-gray text-[15px]">@tushar_codes</p>
+            {authUser && (
+                <div className="mb-4 p-3 hover:bg-twitter-hover rounded-full cursor-pointer transition-colors flex items-center gap-3">
+                    <NavLink to="/profile" className="flex items-center gap-3 flex-1 overflow-hidden">
+                        <div className="w-10 h-10 rounded-full bg-twitter-gray shrink-0 overflow-hidden">
+                            {authUser.profileImg ? (
+                                <img src={authUser.profileImg} alt={authUser.username} className="w-full h-full object-cover" />
+                            ) : (
+                                <div className="w-full h-full bg-twitter-gray flex items-center justify-center text-white font-bold">
+                                    {authUser.fullName[0]}
+                                </div>
+                            )}
+                        </div>
+                        <div className="hidden xl:block flex-1 overflow-hidden">
+                            <p className="font-bold text-[15px] truncate">{authUser.fullName}</p>
+                            <p className="text-twitter-gray text-[15px] truncate">@{authUser.username}</p>
+                        </div>
+                    </NavLink>
+                    <button
+                        onClick={(e) => {
+                            e.preventDefault();
+                            logout();
+                        }}
+                        className="hidden xl:block hover:bg-twitter-blue/10 p-2 rounded-full transition-colors"
+                        title="Logout"
+                    >
+                        <LogOut className="w-5 h-5 text-twitter-text" />
+                    </button>
                 </div>
-                <MoreHorizontal className="hidden xl:block w-5 h-5 ml-auto text-twitter-gray" />
-            </NavLink>
+            )}
         </div>
     );
 };
