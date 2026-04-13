@@ -11,8 +11,9 @@ interface User {
     coverImg?: string;
     bio?: string;
     link?: string;
-    followers: string[];
-    following: string[];
+    followersCount?: number;
+    followingCount?: number;
+    postsCount?: number;
 }
 
 interface AuthContextType {

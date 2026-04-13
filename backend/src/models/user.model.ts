@@ -39,6 +39,18 @@ const userSchema = new mongoose.Schema(
             type: String,
             default: "",
         },
+        followersCount: {
+            type: Number,
+            default: 0,
+        },
+        followingCount: {
+            type: Number,
+            default: 0,
+        },
+        postsCount: {
+            type: Number,
+            default: 0,
+        },
     },
     { timestamps: true }
 );

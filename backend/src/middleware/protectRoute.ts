@@ -25,6 +25,6 @@ export const protectRoute = async (req: any, res: Response, next: NextFunction):
         next();
     } catch (error: any) {
         console.error("AUTH MIDDLEWARE ERROR : ProtectRoute Error :", error.message);
-        return res.status(500).json({ status: "error", errors: ["Internal Server Error"] });
+        return res.status(403).json({ status: "error", errors: ["Unauthorized"] });
     }
 };

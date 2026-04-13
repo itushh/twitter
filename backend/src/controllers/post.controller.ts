@@ -43,7 +43,10 @@ export const createPost = async (req: any, res: Response): Promise<any> => {
             img,
         });
 
-        await newPost.save();
+        await Promise.all([
+            newPost.save(),
+            User.findByIdAndUpdate(userId, { $inc: { postsCount: 1 } }),
+        ]);
         res.status(201).json({ status: "success", data: newPost });
     } catch (error: any) {
         console.error("POST CONTROLLER ERROR : CreatePost Error :", error.message);
@@ -53,8 +56,14 @@ export const createPost = async (req: any, res: Response): Promise<any> => {
 
 export const getAllPosts = async (req: any, res: Response): Promise<any> => {
     try {
+        const page = parseInt(req.query.page as string) || 1;
+        const limit = parseInt(req.query.limit as string) || 20;
+        const skip = (page - 1) * limit;
+
         const posts = await Post.find()
             .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(limit)
             .populate({ path: "user", select: "-password" })
             .populate({ path: "originalPost", populate: { path: "user", select: "-password" } });
 
@@ -157,8 +166,14 @@ export const getUserPosts = async (req: any, res: Response): Promise<any> => {
         const user = await User.findOne({ username });
         if (!user) return res.status(404).json({ status: "error", errors: ["User not found"] });
 
+        const page = parseInt(req.query.page as string) || 1;
+        const limit = parseInt(req.query.limit as string) || 20;
+        const skip = (page - 1) * limit;
+
         const posts = await Post.find({ user: user._id })
             .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(limit)
             .populate({ path: "user", select: "-password" })
             .populate({ path: "originalPost", populate: { path: "user", select: "-password" } });
 
@@ -177,8 +192,14 @@ export const getFollowingPosts = async (req: any, res: Response): Promise<any> =
         const followingRecords = await Follow.find({ follower: userId }).select("following");
         const followingIds = followingRecords.map((f) => f.following);
 
+        const page = parseInt(req.query.page as string) || 1;
+        const limit = parseInt(req.query.limit as string) || 20;
+        const skip = (page - 1) * limit;
+
         const posts = await Post.find({ user: { $in: followingIds } })
             .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(limit)
             .populate({ path: "user", select: "-password" })
             .populate({ path: "originalPost", populate: { path: "user", select: "-password" } });
 

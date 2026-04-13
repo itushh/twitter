@@ -86,11 +86,31 @@ export const followUnfollowUser = async (req: any, res: Response): Promise<any> 
 
         if (isFollowing) {
             // Unfollow
-            await Follow.deleteOne({ _id: isFollowing._id });
-            res.status(200).json({ status: "success", message: "User unfollowed successfully", followed: false });
+            await Promise.all([
+                Follow.deleteOne({ _id: isFollowing._id }),
+                User.findByIdAndUpdate(currentUser, { $inc: { followingCount: -1 } }),
+                User.findByIdAndUpdate(id, { $inc: { followersCount: -1 } }),
+            ]);
+
+            const [updatedMe, updatedThem] = await Promise.all([
+                User.findById(currentUser).select("followingCount"),
+                User.findById(id).select("followersCount")
+            ]);
+
+            res.status(200).json({
+                status: "success",
+                message: "User unfollowed successfully",
+                followed: false,
+                followingCount: updatedMe?.followingCount,
+                followersCount: updatedThem?.followersCount,
+            });
         } else {
             // Follow
-            await Follow.create({ follower: currentUser, following: id });
+            await Promise.all([
+                Follow.create({ follower: currentUser, following: id }),
+                User.findByIdAndUpdate(currentUser, { $inc: { followingCount: 1 } }),
+                User.findByIdAndUpdate(id, { $inc: { followersCount: 1 } }),
+            ]);
             res.status(200).json({ status: "success", message: "User followed successfully", followed: true });
         }
     } catch (error: any) {

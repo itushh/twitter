@@ -46,6 +46,9 @@ export const signup = async (req: Request, res: Response): Promise<any> => {
                     email: newUser.email,
                     profileImg: newUser.profileImg,
                     coverImg: newUser.coverImg,
+                    followersCount: newUser.followersCount,
+                    followingCount: newUser.followingCount,
+                    postsCount: newUser.postsCount,
                 },
             });
         } else {
@@ -78,6 +81,9 @@ export const login = async (req: Request, res: Response): Promise<any> => {
                 email: user.email,
                 profileImg: user.profileImg,
                 coverImg: user.coverImg,
+                followersCount: user.followersCount,
+                followingCount: user.followingCount,
+                postsCount: user.postsCount,
             },
         });
     } catch (error: any) {
@@ -97,11 +103,5 @@ export const logout = async (req: Request, res: Response): Promise<any> => {
 };
 
 export const getMe = async (req: any, res: Response): Promise<any> => {
-    try {
-        const user = await User.findById(req.user._id).select("-password");
-        res.status(200).json({ status: "success", data: user });
-    } catch (error: any) {
-        console.error("AUTH CONTROLLER ERROR : GetMe Error :", error.message);
-        res.status(500).json({ status: "error", errors: ["Internal Server Error"] });
-    }
+    res.status(200).json({ status: "success", data: req.user });
 };

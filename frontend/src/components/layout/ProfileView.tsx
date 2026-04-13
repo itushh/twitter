@@ -39,7 +39,7 @@ const ProfileView = () => {
                 </button>
                 <div>
                     <h1 className="text-xl font-bold">{authUser.fullName}</h1>
-                    <p className="text-twitter-gray text-[13px]">{posts.length} posts</p>
+                    <p className="text-twitter-gray text-[13px]">{authUser.postsCount || 0} posts</p>
                 </div>
             </div>
 
@@ -93,10 +93,10 @@ const ProfileView = () => {
 
                 <div className="flex gap-4 mt-3 text-[15px]">
                     <div className="hover:underline cursor-pointer">
-                        <span className="font-bold">{authUser.following.length}</span> <span className="text-twitter-gray">Following</span>
+                        <span className="font-bold">{authUser.followingCount || 0}</span> <span className="text-twitter-gray">Following</span>
                     </div>
                     <div className="hover:underline cursor-pointer">
-                        <span className="font-bold">{authUser.followers.length}</span> <span className="text-twitter-gray">Followers</span>
+                        <span className="font-bold">{authUser.followersCount || 0}</span> <span className="text-twitter-gray">Followers</span>
                     </div>
                 </div>
             </div>
