@@ -4,7 +4,6 @@ import {
     Search,
     Bell,
     Mail,
-    ListOrdered,
     Bookmark,
     Users,
     User,
@@ -51,7 +50,7 @@ const Sidebar = () => {
                 <SidebarItem Icon={Search} label="Explore" to="/explore" />
                 <SidebarItem Icon={Bell} label="Notifications" to="/notifications" />
                 <SidebarItem Icon={Mail} label="Messages" to="/messages" />
-                <SidebarItem Icon={ListOrdered} label="Lists" to="/lists" />
+                <SidebarItem Icon={Users} label="People" to="/people" />
                 <SidebarItem Icon={Bookmark} label="Bookmarks" to="/bookmarks" />
                 <SidebarItem Icon={Users} label="Communities" to="/communities" />
                 <SidebarItem Icon={User} label="Profile" to="/profile" />

@@ -5,6 +5,8 @@ import cors from "cors";
 
 import { connectDB } from "./lib/db.js";
 import authRouter from "./routes/auth.route.js";
+import postRouter from "./routes/post.route.js";
+import userRouter from "./routes/user.route.js";
 
 config();
 connectDB();
@@ -17,6 +19,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use("/api/auth", authRouter);
+app.use("/api/posts", postRouter);
+app.use("/api/users", userRouter);
 
 app.get("/", (req, res) => {
     res.status(200).json({ timestamp: new Date(), status: "OK", health: "Good", mode: process.env.NODE_ENV || "development" });

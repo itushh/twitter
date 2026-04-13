@@ -1,71 +1,90 @@
+import { useEffect, useState } from "react";
 import TweetBox from "../ui/TweetBox";
 import Tweet from "../ui/Tweet";
+import { axiosInstance } from "../../lib/axios";
+import { Loader2 } from "lucide-react";
 
 const Feed = ({ onClick }: { onClick: () => void }) => {
+    const [posts, setPosts] = useState<any[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [feedType, setFeedType] = useState<"forYou" | "following">("forYou");
+
+    const fetchPosts = async () => {
+        try {
+            setIsLoading(true);
+            const endpoint = feedType === "forYou" ? "/posts/all" : "/posts/following";
+            const res = await axiosInstance.get(endpoint);
+            if (res.data.status === "success") {
+                setPosts(res.data.data);
+            }
+        } catch (error) {
+            console.error("Error fetching posts:", error);
+            setPosts([]);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchPosts();
+    }, [feedType]);
+
     return (
-        <div className="border-x w-full border-twitter-border">
-            <div className="sticky top-0 bg-twitter-background/80 backdrop-blur-md z-10">
-                <div className="flex border-b border-twitter-border text-sm">
-                    <div className="flex-1 hover:bg-twitter-hover cursor-pointer transition-colors relative py-4 text-center">
-                        <span className="font-bold relative z-10">For you</span>
-                        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-14 h-1 bg-twitter-blue rounded-full" />
+        <div className="border-x w-full border-twitter-border min-h-screen">
+            <div className="sticky top-0 bg-twitter-background/80 backdrop-blur-md z-10 border-b border-twitter-border">
+                <div className="flex text-[15px]">
+                    <div
+                        className="flex-1 hover:bg-twitter-hover cursor-pointer transition-colors relative py-4 text-center group"
+                        onClick={() => setFeedType("forYou")}
+                    >
+                        <span className={`font-bold relative z-10 ${feedType === "forYou" ? "text-twitter-text" : "text-twitter-gray"}`}>
+                            For you
+                        </span>
+                        {feedType === "forYou" && (
+                            <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-14 h-1 bg-twitter-blue rounded-full" />
+                        )}
                     </div>
-                    <div className="flex-1 hover:bg-twitter-hover cursor-pointer transition-colors py-4 text-center">
-                        <span className="text-twitter-gray font-medium">Following</span>
+                    <div
+                        className="flex-1 hover:bg-twitter-hover cursor-pointer transition-colors py-4 text-center relative group"
+                        onClick={() => setFeedType("following")}
+                    >
+                        <span className={`font-bold relative z-10 ${feedType === "following" ? "text-twitter-text" : "text-twitter-gray"}`}>
+                            Following
+                        </span>
+                        {feedType === "following" && (
+                            <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-16 h-1 bg-twitter-blue rounded-full" />
+                        )}
                     </div>
                 </div>
             </div>
 
-            <TweetBox msg="What's happening?" />
+            <TweetBox msg={feedType === "forYou" ? "What's happening?" : "Catch up with your friends!"} onPostSuccess={fetchPosts} />
 
-            <Tweet
-                onClick={onClick}
-                displayName="Tushar"
-                username="tushar_codes"
-                timestamp="2h"
-                text="Building a Twitter clone with React and Tailwind CSS v4! The new version of Tailwind is amazing. 🚀 #webdev #reactjs"
-                replies={12}
-                retweets={45}
-                likes={230}
-                views="10.5K"
-            />
-
-            <Tweet
-                onClick={onClick}
-                displayName="Elon Musk"
-                username="elonmusk"
-                timestamp="5h"
-                text="Mars is looking good today."
-                replies={5430}
-                retweets={12300}
-                likes={89200}
-                views="42M"
-            />
-
-            <Tweet
-                onClick={onClick}
-                displayName="Vercel"
-                username="vercel"
-                timestamp="8h"
-                text="Deploying your React applications has never been easier."
-                image="https://images.unsplash.com/photo-1633356122544-f134324a6cee?auto=format&fit=crop&q=80&w=1470&ixlib=rb-4.0.3"
-                replies={89}
-                retweets={120}
-                likes={670}
-                views="120K"
-            />
-
-            <Tweet
-                onClick={onClick}
-                displayName="Frontend Master"
-                username="frontend_master"
-                timestamp="12h"
-                text="What's your favorite CSS framework in 2024?\n\n1. Tailwind CSS\n2. Styled Components\n3. CSS Modules\n4. Vanilla CSS"
-                replies={230}
-                retweets={15}
-                likes={89}
-                views="15.2K"
-            />
+            {isLoading ? (
+                <div className="flex justify-center p-10">
+                    <Loader2 className="w-8 h-8 text-twitter-blue animate-spin" />
+                </div>
+            ) : posts.length === 0 ? (
+                <div className="flex flex-col items-center p-10 text-center gap-2">
+                    <p className="font-bold text-xl">
+                        {feedType === "forYou" ? "No posts yet" : "No posts from following"}
+                    </p>
+                    <p className="text-twitter-gray max-w-sm">
+                        {feedType === "forYou"
+                            ? "Be the first one to post something!"
+                            : "Follow some people to see their posts here, or check out what's happening for you."}
+                    </p>
+                </div>
+            ) : (
+                posts.map((post) => (
+                    <Tweet
+                        key={post._id}
+                        post={post}
+                        onRefresh={fetchPosts}
+                        onClick={onClick}
+                    />
+                ))
+            )}
         </div>
     );
 };

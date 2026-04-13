@@ -1,11 +1,33 @@
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, CalendarDays, MapPin, Link as LinkIcon } from "lucide-react";
+import { ArrowLeft, CalendarDays, MapPin, Link as LinkIcon, Loader2 } from "lucide-react";
 import Tweet from "../ui/Tweet";
 import { useAuth } from "../../context/AuthContext";
+import { axiosInstance } from "../../lib/axios";
 
 const ProfileView = () => {
     const navigate = useNavigate();
     const { authUser } = useAuth();
+    const [posts, setPosts] = useState<any[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+
+    const fetchUserPosts = async () => {
+        if (!authUser) return;
+        try {
+            const res = await axiosInstance.get(`/posts/user/${authUser.username}`);
+            if (res.data.status === "success") {
+                setPosts(res.data.data);
+            }
+        } catch (error) {
+            console.error("Error fetching user posts:", error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchUserPosts();
+    }, [authUser]);
 
     if (!authUser) return null;
 
@@ -17,7 +39,7 @@ const ProfileView = () => {
                 </button>
                 <div>
                     <h1 className="text-xl font-bold">{authUser.fullName}</h1>
-                    <p className="text-twitter-gray text-[13px]">45 posts</p>
+                    <p className="text-twitter-gray text-[13px]">{posts.length} posts</p>
                 </div>
             </div>
 
@@ -95,18 +117,25 @@ const ProfileView = () => {
                 </div>
             </div>
 
-            <Tweet
-                displayName={authUser.fullName}
-                username={authUser.username}
-                timestamp="2h"
-                text="Just finished the layout for my new project! #webdev"
-                replies={5}
-                retweets={10}
-                likes={50}
-                views="2K"
-            />
+            {isLoading ? (
+                <div className="flex justify-center p-10">
+                    <Loader2 className="w-8 h-8 text-twitter-blue animate-spin" />
+                </div>
+            ) : posts.length === 0 ? (
+                <div className="flex flex-col items-center p-10 text-center">
+                    <p className="font-bold text-xl">No posts yet</p>
+                    <p className="text-twitter-gray">When you post, they'll show up here.</p>
+                </div>
+            ) : (
+                posts.map((post) => (
+                    <Tweet
+                        key={post._id}
+                        post={post}
+                        onRefresh={fetchUserPosts}
+                    />
+                ))
+            )}
         </div>
     );
 };
-
 export default ProfileView;

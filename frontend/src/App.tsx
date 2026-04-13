@@ -4,6 +4,7 @@ import Home from "./pages/Home";
 import Profile from "./pages/Profile";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
+import People from "./pages/People";
 import { useAuth } from "./context/AuthContext";
 import { Loader2 } from "lucide-react";
 
@@ -27,7 +28,7 @@ const App = () => {
           <Route path="explore" element={<UnderConstruction />} />
           <Route path="notifications" element={<UnderConstruction />} />
           <Route path="messages" element={<UnderConstruction />} />
-          <Route path="lists" element={<UnderConstruction />} />
+          <Route path="people" element={<People />} />
           <Route path="bookmarks" element={<UnderConstruction />} />
           <Route path="communities" element={<UnderConstruction />} />
           <Route path="profile" element={<Profile />} />
